@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "python run file",
+            "type": "shell",
+            "command": "python3 -i \"${file}\"",
+            "problemMatcher": []
+        },
+        {
+            "label": "OCaml",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "windows": {
+                "command": "ocaml -init \\\"${file}\\\""
+            },
+            "linux": {
+                "command": "ocaml -init \"${file}\""
+            },
+            "osx": {
+                "command": "ocaml -init \"${file}\""
+            },
+            "problemMatcher": [
+                "$tsc"
+            ]
+        }
+    ]
+}
