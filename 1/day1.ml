@@ -21,20 +21,20 @@ let rec print_list = function
 let naloga1 string = 
   let nums = List.map int_of_string (string_to_list string) in
   let rec r l1 l2 = match l1, l2 with
-    | [], _ -> "None"
     | x::xs, y::ys when x + y = 2020 -> string_of_int (x * y)
     | frst, y::ys -> r frst ys
     | x::xs, [] -> r xs xs
+    | [], _ -> "None"
   in r nums nums
 
 let naloga2 string = 
   let nums = List.map int_of_string (string_to_list string) in
   let rec r l1 l2 l3 = match l1, l2, l3 with
-    | [], _, _ -> "None"
     | x::xs, y::ys, z::zs when x + y + z = 2020 -> string_of_int (x * y * z)
     | x, y, z::zs -> r x y zs
     | x, y::ys, [] -> r x ys ys
     | x::xs, [], _ ->  r xs xs xs
+    | [], _, _ -> "None"
   in r nums nums nums
 
 let main () =
