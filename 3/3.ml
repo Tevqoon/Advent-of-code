@@ -14,49 +14,57 @@ let string_to_list string =
   |> String.split_on_char '\n'
   |> List.filter (fun s -> s <> "");;
 
-(*
-6-7 z: dqzzzjbzz
-*)
-
-let num_splitter numstr =
-    match String.split_on_char '-' numstr with
-    | n1::n2::[] -> (int_of_string n1, int_of_string n2)
-    | _ -> failwith "yikes bro" 
-
-let formatter line =
-  let lst = String.split_on_char ' ' line in
-  match lst with
-  | nums::char::pass::[] -> 
-    let t1, t2 = num_splitter nums in
-      (t1, t2, String.get char 0, pass)
-  | _ -> failwith "yikes bro"
-
 let explode input = input |> String.to_seq |> List.of_seq
 
 let counter char str = 
   List.fold_left (fun x y -> x + (if y = char then 1 else 0)) 0 (explode str)
 
-let checker (n1, n2, char, str) = 
-  let c = counter char str in
-  c >= n1 && c <= n2
+let format str =
+  str
+  |> string_to_list
+  |> List.map explode
 
-let checker' (n1, n2, char, str) = match (str.[n1 - 1], str.[n2 - 1]) with
-  | c, c' when c = char && c' = char  -> false
-  | c, c' when c = char || c' = char  -> true
-  | _ -> false 
+let descend1 tobolist slopex = 
+  let width = List.length (List.nth tobolist 0) in
+  let rec r tobo current_x trees = match tobo with
+    | [] -> trees
+    | line::rest -> 
+      let field = List.nth line current_x in
+      let tree = (if field = '#' then 1 else 0) in
+      r rest ((current_x + slopex) mod width) (trees + tree)
+  in r tobolist 0 0
 
-let naloga1 string =
-  let lines = List.map formatter (string_to_list string) in
-  List.fold_left (fun x y -> x + (if (checker y) then 1 else 0)) 0 lines
+let descendbyn tobolist slopex slopey = 
+  let width = List.length (List.nth tobolist 0) in
+  let rec r tobo current_x_mod current_y_mod trees = match tobo with
+  | [] -> trees
+  | line::rest when current_y_mod != 0 -> r rest current_x_mod ((current_y_mod + 1) mod slopey) trees
+  | line::rest when current_y_mod = 0-> 
+      let field = List.nth line current_x_mod in
+      let tree = (if field = '#' then 1 else 0) in
+      r rest ((current_x_mod + slopex) mod width) 1 (trees + tree)
+  | _ -> failwith "How did we get here?"
+  in r tobolist 0 0 0
+
+let naloga1 string = 
+  let trees = format string in
+  descend1 trees 3
   |> string_of_int
-
+  
 let naloga2 string = 
-  let lines = List.map formatter (string_to_list string) in
-  List.fold_left (fun x y -> x + (if (checker' y) then 1 else 0)) 0 lines
+  let trees = format string in
+  let d1 = descend1 trees 1
+  and d2 = descend1 trees 3
+  and d3 = descend1 trees 5
+  and d4 = descend1 trees 7
+  and d5 = descendbyn trees 1 2 in
+  d1 * d2 * d3 * d4 * d5
   |> string_of_int
+
+
 
 let main () =
-  let day = "2" in
+  let day = "3" in
   print_endline ("Solving DAY: " ^ day);
   let input_data = preberi_datoteko (day ^ "/day_" ^ day ^ ".in") in
 
