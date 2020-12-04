@@ -50,7 +50,7 @@ let naloga1 string =
   let trees = format string in
   descend1 trees 3
   |> string_of_int
-  
+
 let naloga2 string = 
   let trees = format string in
   let d1 = descend1 trees 1
@@ -60,8 +60,6 @@ let naloga2 string =
   and d5 = descendbyn trees 1 2 in
   d1 * d2 * d3 * d4 * d5
   |> string_of_int
-
-
 
 let main () =
   let day = "3" in
