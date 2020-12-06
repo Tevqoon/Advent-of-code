@@ -1,6 +1,5 @@
 open String
 open List
-
 let preberi_datoteko ime_datoteke =
   let chan = open_in ime_datoteke in
   let vsebina = really_input_string chan (in_channel_length chan) in
@@ -15,19 +14,51 @@ let izpisi_datoteko ime_datoteke vsebina =
 let string_to_list string = 
   string
   |> String.split_on_char '\n'
-  |> List.filter (fun s -> s <> "");;
-
+  (*|> List.filter (fun s -> s <> "");;*)
 let explode input = input |> String.to_seq |> List.of_seq
 
-let counter char str = 
-  List.fold_left (fun x y -> x + (if y = char then 1 else 0)) 0 (explode str)
+let format string =
+  let rec r finished line lines = match lines with
+    | [] -> finished
+    | head::blank::rest when blank = "" -> r (finished @ [line ^ head]) "" rest
+    | head::rest -> r finished (line ^ head ^ " ") rest
+  in
+  string
+  |> string_to_list
+  |> r [] ""
+  |> List.map explode
 
-let naloga1 string = ""
+let counter char char_lst = 
+  List.fold_left (fun x y -> x + (if y = char then 1 else 0)) 0 char_lst
 
-let naloga2 string = ""
+let question_counter char_lst = 
+  let rec r counts chars = match chars with
+    | [] -> counts 
+    | x::xs -> r (counts @ [(x, counter x chars)])
+                 (filter (fun y -> y <> x) xs)
+  in r [] char_lst
+
+let naloga1 string =
+  format string
+  |> List.map (List.filter (fun x -> x <> ' '))
+  |> map question_counter
+  |> map List.length 
+  |> List.fold_left (+) 0
+  |> string_of_int
+
+let naloga2 string = 
+  let char_lists = format string in
+  let people_counts = char_lists |> map (fun x -> (counter ' ' x) + 1) in
+  char_lists
+  |> List.map (List.filter (fun x -> x <> ' '))
+  |> map question_counter
+  |> map2 (fun x y -> filter (fun (a, c) -> c = x) y) people_counts
+  |> map length
+  |> fold_left (+) 0
+  |> string_of_int
 
 let main () =
-  let day = "INSERT_DAY_HERE" in
+  let day = "6" in
   print_endline ("Solving DAY: " ^ day);
   let input_data = preberi_datoteko (day ^ "/day_" ^ day ^ ".in") in
 
