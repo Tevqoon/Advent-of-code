@@ -21,7 +21,7 @@
                 "command": "ocaml -init \"${file}\""
             },
             "osx": {
-                "command": "ocaml -init \"${file}\""
+                "command": "utop -init \"${file}\""
             },
             "problemMatcher": [
                 "$tsc"

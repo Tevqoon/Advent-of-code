@@ -26,10 +26,10 @@ let naloga1 string = ""
 
 let naloga2 string = ""
 
+let day = "INSERT_DAY_HERE"
+let input_data = preberi_datoteko (day ^ "/day_" ^ day ^ ".in")
 let main () =
-  let day = "INSERT_DAY_HERE" in
   print_endline ("Solving DAY: " ^ day);
-  let input_data = preberi_datoteko (day ^ "/day_" ^ day ^ ".in") in
 
   let p1_start = Sys.time () in
   let part1 = naloga1 input_data in
