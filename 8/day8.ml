@@ -19,17 +19,20 @@ let format string =
   |> map (fun lst -> (hd lst, int_of_string (hd (tl lst))))
   |> Array.of_list
 
-let rec stepper array vis i acc = 
-  let (instr, next) = Array.get array i
-  and state = i >= (Array.length array) - 1 in
-  if mem i vis || state then (state, acc) else match instr with
-  | "acc" -> stepper array (i::vis) (i + 1) (acc + next)
-  | "nop" -> stepper array (i::vis) (i + 1) acc
-  | "jmp" -> stepper array (i::vis) (i + next) acc
+module IS = Set.Make(Int);;
+
+let rec stepper array vis ind acc = 
+  let (instr, next) = Array.get array ind
+  and state = ind >= (Array.length array) - 1 in
+  if IS.mem ind vis || state then (state, acc) else match instr with
+  | "acc" -> stepper array (IS.add ind vis) (ind + 1) (acc + next)
+  | "nop" -> stepper array (IS.add ind vis) (ind + 1) acc
+  | "jmp" -> stepper array (IS.add ind vis) (ind + next) acc
   | _ -> failwith "yike"
+
 let naloga1 string = 
   let prog = format string in
-  stepper prog [] 0 0 |> (fun (x, y) -> y) |> string_of_int
+  stepper prog IS.empty 0 0 |> (fun (x, y) -> y) |> string_of_int
 
 let flip = function
   | ("nop", y) -> ("jmp", y)
@@ -43,7 +46,7 @@ let naloga2 string =
     match Array.get prog i with
       | ("acc", y) -> loop (i + 1)
       | (x, y) -> Array.set new_prog i (flip (x, y));
-    match stepper new_prog [] 0 0 with
+    match stepper new_prog IS.empty 0 0 with
       | (true, acc) -> acc
       | (false, _) -> loop (i + 1)
   in loop 0 |> string_of_int
