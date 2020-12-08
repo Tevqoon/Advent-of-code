@@ -12,51 +12,41 @@ let izpisi_datoteko ime_datoteke vsebina =
   close_out chan
 
 let string_to_list char string = 
-  string
-  |> String.split_on_char char
-  |> List.filter (fun s -> s <> "");;
+  string |> String.split_on_char char |> List.filter (fun s -> s <> "");;
 
 let format string =
-  string |> string_to_list '\n'
-  |> map (string_to_list ' ')
+  string |> string_to_list '\n' |> map (string_to_list ' ')
   |> map (fun lst -> (hd lst, int_of_string (hd (tl lst))))
   |> Array.of_list
 
+let rec stepper array vis i acc = 
+  let (instr, next) = Array.get array i
+  and state = i >= (Array.length array) - 1 in
+  if mem i vis || state then (state, acc) else match instr with
+  | "acc" -> stepper array (i::vis) (i + 1) (acc + next)
+  | "nop" -> stepper array (i::vis) (i + 1) acc
+  | "jmp" -> stepper array (i::vis) (i + next) acc
+  | _ -> failwith "yike"
 let naloga1 string = 
   let prog = format string in
-  let rec r visited i acc = 
-    let (instr, next) = Array.get prog i in
-    if mem i visited then acc else match instr with
-    | "acc" -> r (visited @ [i]) (i + 1) (acc + next)
-    | "nop" -> r (visited @ [i]) (i + 1) acc
-    | "jmp" -> r (visited @ [i]) (i + next) acc
-    | _ -> failwith "yike"
-  in r [] 0 0 |> string_of_int
+  stepper prog [] 0 0 |> (fun (x, y) -> y) |> string_of_int
 
-(*May god forgive me for what I am about to do.*)
-(*This is gonna be the jankiest, ugliest code of this decade. Befitting 2020, so to speak *)
-let naloga2 string = 
+let flip = function
+  | ("nop", y) -> ("jmp", y)
+  | ("jmp", y) -> ("nop", y)
+  | _ -> failwith "yike"
+
+let naloga2 string =
   let prog = format string in
-  let len = (Array.length prog) - 1 in
   let rec loop i =
-    if i >= len then failwith "yike?" else
-    let (x, y) = Array.get prog i in
-    if x = "acc" then loop (i + 1) else
-    let new_op = match x with
-      | "nop" -> ("jmp", y)
-      | "jmp" -> ("nop", y) 
-      | _ -> failwith "yike!" in
     let new_prog = Array.copy prog in
-      Array.set new_prog i new_op;
-    let rec runner visited index acc =
-      let (instr, next) = Array.get new_prog index in
-      if mem index visited then (loop (i + 1))
-      else if index >= len then acc else match instr with
-        | "acc" -> runner (visited @ [index]) (index + 1) (acc + next)
-        | "nop" -> runner (visited @ [index]) (index + 1) acc
-        | "jmp" -> runner (visited @ [index]) (index + next) acc
-        | _ -> failwith "yike"
-      in runner [] 0 0 in loop 0 |> string_of_int
+    match Array.get prog i with
+      | ("acc", y) -> loop (i + 1)
+      | (x, y) -> Array.set new_prog i (flip (x, y));
+    match stepper new_prog [] 0 0 with
+      | (true, acc) -> acc
+      | (false, _) -> loop (i + 1)
+  in loop 0 |> string_of_int
 
 let day = "8"
 let input_data = preberi_datoteko (day ^ "/day_" ^ day ^ ".in")

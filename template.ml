@@ -19,9 +19,6 @@ let string_to_list string =
 
 let explode input = input |> String.to_seq |> List.of_seq
 
-let counter char str = 
-  List.fold_left (fun x y -> x + (if y = char then 1 else 0)) 0 (explode str)
-
 let naloga1 string = ""
 
 let naloga2 string = ""
