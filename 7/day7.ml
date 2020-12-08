@@ -44,7 +44,7 @@ let parse_line line =
   Str.split (Str.regexp " bags contain ") line
   |> (fun lst -> (hd lst, parse_rest (hd (tl lst))))
 
-let format string = 
+let format string =
   string_to_list string
   |> map parse_line
 
