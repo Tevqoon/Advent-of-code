@@ -16,8 +16,7 @@ let izpisi_datoteko ime_datoteke vsebina =
 let string_to_list string = 
   string
   |> String.split_on_char '\n'
-  |> filter (fun s -> s <> "");;
-
+  |> filter (fun s -> s <> "")
 
 let format string =
   let arr = string_to_list string 
@@ -33,7 +32,7 @@ let naloga1 formatted =
   let a2 = Array.append data (Array.make 1 ((get_last data) + 3)) in
   Array.map2 (fun x y -> y - x) a1 a2
   |> Array.fold_left (fun (x1, x3) y -> match y with
-                      | 1 -> (x1 + 1, x3)
+                      | 1 -> (x1 + 1, x3) 
                       | 3 -> (x1, x3 + 1)
                       | _ -> (x1, x3)) (0, 0)
   |> (fun (x, y) -> x * y) |> string_of_int
@@ -44,7 +43,9 @@ let naloga2 formatted =
   let data =  Array.concat [(Array.make 1 0); data; (Array.make 1 head)] in
   let paths = Array.make (head + 1) Z.zero in
   Array.iter (fun i -> Array.set paths i (match i with
-      | 0 -> Z.one | 1 -> Z.one | 2 -> Z.add paths.(0) paths.(1)
+      | 0 -> Z.one
+      | 1 -> Z.one
+      | 2 -> Z.add paths.(0) paths.(1)
       | n -> Z.add paths.(i - 1) (Z.add paths.(i - 2) paths.(i - 3)));) data;
   paths.(head) |> Z.to_string
 
