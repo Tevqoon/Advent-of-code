@@ -1,4 +1,3 @@
-open String
 open List
 
 let preberi_datoteko ime_datoteke =
