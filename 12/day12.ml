@@ -41,8 +41,8 @@ let step' (px, py) (wx, wy) instr = match instr with
   | dir, v -> (px, py), turner (wx, wy) (dir, v)
 
 let rec looper stepper ((px, py), dir) = function
-    | [] -> abs(px) + abs(py)
-    | instr::rest -> looper stepper (stepper (px, py) dir instr) rest
+  | [] -> abs(px) + abs(py)
+  | instr::rest -> looper stepper (stepper (px, py) dir instr) rest
 
 let naloga1 string =
   format string
