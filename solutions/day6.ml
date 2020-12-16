@@ -57,18 +57,18 @@ let naloga2 string =
   |> fold_left (+) 0
   |> string_of_int
 
+let day = "6"
+let input_data = preberi_datoteko ("inputs/day_" ^ day ^ ".in")
 let main () =
-  let day = "6" in
   print_endline ("Solving DAY: " ^ day);
-  let input_data = preberi_datoteko (day ^ "/day_" ^ day ^ ".in") in
-
+  
   let p1_start = Sys.time () in
   let part1 = naloga1 input_data in
   let t1_time = Sys.time () -. p1_start in
   print_endline "PART 1:";
   print_endline part1;
   print_endline ("Taken: " ^ string_of_float t1_time ^ "s");
-  izpisi_datoteko (day ^ "/day_" ^ day ^ "_1.out") part1;
+  izpisi_datoteko ("outputs/day_" ^ day ^ "_1.out") part1;
   
   let p2_start = Sys.time () in
   let part2 = naloga2 input_data in
@@ -77,7 +77,8 @@ let main () =
   print_endline part2;
   print_endline ("Taken: " ^ string_of_float t2_time ^ "s");
   print_endline ("Total: " ^ string_of_float (t1_time +. t2_time) ^ "s");
-  izpisi_datoteko (day ^ "/day_" ^ day ^ "_2.out") part2;
+  izpisi_datoteko ("outputs/day_" ^ day ^ "_2.out") part2;
   ()
+
 
 let _ = main ()
