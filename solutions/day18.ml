@@ -19,35 +19,25 @@ let string_to_list string =
 let explode input = input |> String.to_seq |> List.of_seq
 
 let parse_simple string = 
-  match string with
-    | "" -> 0
-    | _ ->
-  let stuff = String.split_on_char ' ' string in
-  let aux = ref (if string.[1] = '*' then 1 else 0)
-  and op = ref (+) in
-  List.iter (fun x -> match x with
-    | "+" -> op := (+);
-    | "*" -> op := (fun x y -> x * y);
-    | n -> aux := (!op (int_of_string n) !aux);) stuff;
-  !aux
-
-let rest_of_string string index =
-  String.sub string index (String.length string - index)
+  let rec recursor aux op = function
+    | [] -> aux
+    | "+"::xs -> recursor aux (+) xs
+    | "*"::xs -> recursor aux (fun x y -> x * y) xs
+    |   x::xs -> recursor (op (int_of_string x) aux) op xs in
+  recursor 0 (+) (String.split_on_char ' ' string)
 
 let next_inner_paren string =
-  let lst = explode string |> mapi (fun i x -> (x, i)) in
-  let l = ref 0
-  and r = ref 0 in
-  let level = ref 0 in
-  let rec recurser lst = match lst, !level with
-    | [], _ -> ()
-    | (x, i)::xs, 0 when x = '(' -> l := i; level := 1; recurser xs
-    | (x, i)::xs, _ when x = '(' -> level := !level + 1; recurser xs
-    | (x, i)::xs, 1 when x = ')' -> r := i;
-    | (x, i)::xs, _ when x = ')' -> level := !level - 1; recurser xs
-    | (x, i)::xs, _ -> recurser xs
-  in recurser lst;
-  (String.sub string 0 !l, String.sub string (!l + 1) (!r - !l - 1), rest_of_string string (!r + 1)) 
+  let rec recurser level l r = function
+    | ('(', i)::xs when level = 0 -> recurser 1 i r xs
+    | ('(', _)::xs -> recurser (level + 1) l r xs
+    | (')', i)::xs when level = 1 -> (l, i)
+    | (')', _)::xs -> recurser (level - 1) l r xs
+    | _::xs -> recurser level l r xs
+    | [] -> failwith "yikeroo" in
+  let l, r = recurser 0 0 0 (explode string |> mapi (fun i x -> (x, i))) in
+  (String.sub string 0 l, 
+   String.sub string (l + 1) (r - l - 1), 
+   String.sub string (r + 1) (String.length string - r - 1)) 
 
 let rec parse_paren parser string = 
   match String.index_opt string '(' with
@@ -63,27 +53,21 @@ let naloga1 string =
   |> fold_left (+) 0
   |> string_of_int
 
-let (+--+) str1 str2 =
+let (++) str1 str2 =
   string_of_int ((int_of_string str1) + (int_of_string str2))
 
 let parse_simple' string = 
-  match string with
-    | "" -> 0
-    | _ ->
-  let stuff = String.split_on_char ' ' string in
-  let pluses = stuff 
+  let symbols = String.split_on_char ' ' string in
+  let pluses = symbols 
     |> mapi (fun i x -> (i, x))
     |> filter (fun (i, x) -> x = "+")
     |> map fst in
-  let stuff_array = Array.of_list stuff in
+  let symbol_arr = Array.of_list symbols in
   List.iter (fun i -> 
-    stuff_array.(i + 1) <- stuff_array.(i - 1) +--+ stuff_array.(i + 1);
-    stuff_array.(i - 1) <- "remove";
-    stuff_array.(i) <- "remove";) pluses;
-  Array.to_list stuff_array
-    |> filter (fun x -> x <> "remove" && x <> "*")
-    |> map int_of_string
-    |> fold_left (fun x y -> x * y) 1
+    symbol_arr.(i + 1) <- symbol_arr.(i - 1) ++ symbol_arr.(i + 1);
+    symbol_arr.(i - 1) <- "*";
+    symbol_arr.(i)     <- "*";) pluses;
+  Array.fold_left (fun x y -> if y = "*" then x else x * (int_of_string y)) 1 symbol_arr
 
 let naloga2 string =
   string_to_list string
