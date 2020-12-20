@@ -12,8 +12,7 @@ let izpisi_datoteko ime_datoteke vsebina =
   close_out chan
 
 let string_to_list string = 
-  string
-  |> String.split_on_char '\n'
+  String.split_on_char '\n' string
   |> List.filter (fun s -> s <> "")
 
 let explode input = input |> String.to_seq |> List.of_seq

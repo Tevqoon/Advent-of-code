@@ -35,7 +35,7 @@ let naloga1 formatted =
                       | 1 -> (x1 + 1, x3) 
                       | 3 -> (x1, x3 + 1)
                       | _ -> (x1, x3)) (0, 0)
-  |> (fun (x, y) -> x * y) |> string_of_int
+  |> ( * ) |> string_of_int
 
 let naloga2 formatted = 
   let data = formatted in

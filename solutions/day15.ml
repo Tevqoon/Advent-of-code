@@ -14,8 +14,7 @@ let izpisi_datoteko ime_datoteke vsebina =
 let format string =
   string
   |> String.split_on_char ','
-  |> map int_of_string
-  |> rev
+  |> rev_map int_of_string
 
 let looper' num data =
   let things = Array.make num 0 in
@@ -27,11 +26,11 @@ let looper' num data =
       | y -> things.(!prev) <- turn - 1; prev := turn - y - 1;
   done; !prev
 
-let naloga1 string = 
-  string |> looper' 2020 |> string_of_int
+let naloga1 formatted = 
+  formatted |> looper' 2020 |> string_of_int
 
-let naloga2 string = 
-  string |> looper' 30_000_000 |> string_of_int
+let naloga2 formatted = 
+  formatted |> looper' 30_000_000 |> string_of_int
 
 let day = "15"
 let input_data = preberi_datoteko ("inputs/day_" ^ day ^ ".in") |> format

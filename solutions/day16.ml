@@ -93,7 +93,7 @@ let naloga2 string =
   |> mapi (fun i x -> (x, i))
   |> filter (fun (x, _) -> is_departure x)
   |> map (fun (_, i) -> nth my_ticket i)
-  |> fold_left (fun x y -> x * y) 1
+  |> fold_left ( * ) 1
   |> string_of_int
 
 let day = "16"

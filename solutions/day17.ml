@@ -19,13 +19,13 @@ let explode input = input |> String.to_seq |> List.of_seq
 
 let format string = 
   string_to_list string
-  |> map explode
-  |> map Array.of_list
+  |> rev_map explode
+  |> rev_map Array.of_list
   |> Array.of_list
   |> Array.make 1
 
 let diagonal3 x = (x, x, x)
-let cartesian3 (l1, l2, l3) = flatten (flatten (map (fun x -> map (fun y -> map (fun z -> x, y, z) l3) l2) l1))
+let cartesian3 (l1, l2, l3) = flatten (flatten (rev_map (fun x -> rev_map (fun y -> rev_map (fun z -> x, y, z) l3) l2) l1))
 
 let neighbors x y z arr = 
   let mz = Array.length arr - 1
@@ -33,7 +33,7 @@ let neighbors x y z arr =
   and mx = Array.length arr.(0).(0) - 1 in
   cartesian3 (diagonal3 [-1;0;1])
   |> filter (fun (i, j, k) -> (i, j, k) <> (0, 0, 0) && 0 <= x + i && x + i <= mx && 0 <= y + j && y + j <= my && 0 <= z + k && z + k <= mz)
-  |> map (fun (i,j,k) -> arr.(z + k).(y + j).(x + i))
+  |> rev_map (fun (i,j,k) -> arr.(z + k).(y + j).(x + i))
   |> fold_left (fun active y -> match y with
                 | '#' -> active + 1
                 | _ -> active) 0 
@@ -95,7 +95,7 @@ let naloga1 string =
   |> string_of_int
 
 let diagonal4 x = (x, x, x, x)
-let cartesian4 (l1, l2, l3, l4) = flatten(flatten (flatten (map (fun x -> map (fun y -> map (fun z -> map (fun w -> x, y, z, w) l4) l3) l2) l1)))
+let cartesian4 (l1, l2, l3, l4) = flatten(flatten (flatten (rev_map (fun x -> rev_map (fun y -> rev_map (fun z -> rev_map (fun w -> x, y, z, w) l4) l3) l2) l1)))
 
 let neighbors4 x y z w arr = 
   let mw = Array.length arr - 1
@@ -104,7 +104,7 @@ let neighbors4 x y z w arr =
   and mx = Array.length arr.(0).(0).(0) - 1 in
   cartesian4 (diagonal4 [-1;0;1])
   |> filter (fun (i, j, k, l) -> (i, j, k, l) <> (0, 0, 0, 0) && 0 <= x + i && x + i <= mx && 0 <= y + j && y + j <= my && 0 <= z + k && z + k <= mz && 0 <= w + l && w + l <= mw)
-  |> map (fun (i, j, k, l) -> arr.(w + l).(z + k).(y + j).(x + i))
+  |> rev_map (fun (i, j, k, l) -> arr.(w + l).(z + k).(y + j).(x + i))
   |> fold_left (fun active y -> match y with
                 | '#' -> active + 1
                 | _ -> active) 0 

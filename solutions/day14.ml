@@ -18,15 +18,6 @@ let string_to_list char string =
 
 let explode input = input |> String.to_seq |> List.of_seq
 
-let short = "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X\nmem[8] = 11\nmem[7] = 101\nmem[8] = 0\n"
-
-(*
-mask = 001X11X1X010X1X1010XX10X100101011000
-mem[43398] = 563312
-mem[51673] = 263978
-mem[18028] = 544304215
-*)
-
 let t_of_lst lst = (hd lst, hd @@ tl lst)
 
 let maskparser line =
@@ -79,8 +70,6 @@ let naloga1 string =
   in loop "" instr
   |> fold_left (+) 0
   |> string_of_int
-
-let short' = "mask = 000000000000000000000000000000X1001X\nmem[42] = 100\nmask = 00000000000000000000000000000000X0XX\nmem[26] = 1\n"
 
 let apply_mask' mask value = 
   value
