@@ -139,14 +139,13 @@ let monster_no chart =
           (if subarray.(i).(j) = '#' then hit := !hit @ [(i, j)] else succeeded := false)
       ) x) monster;
     if !succeeded then 
-      List.iter (fun (x, y) -> hit_squares.(startx + x).(starty + y) <- true) !hit; in
-
+      List.iter (fun (x, y) -> hit_squares.(startx + x).(starty + y) <- true) !hit; 
+    in
   for i = 0 to Array.length chart - monster_x do
     for j = 0 to Array.length chart.(0) - monster_y do
       count_subsection (Array.map (fun z -> Array.sub z j monster_y) (Array.sub chart i monster_x)) i j;
     done;
   done;
-
   let final_count = ref 0 in
   Array.iter (fun x ->
     Array.iter (fun y ->
@@ -174,6 +173,25 @@ let naloga2 string =
   fold_left (fun x y -> if y = 0 then x else all_count - y) 0 monster_counts
   |> string_of_int
 
+let naloga2' string =
+  let matrices = format string in
+  let mapsize = int_of_float ((float_of_int @@ length matrices) ** (0.5)) in
+  let first = hd @@ filter (fun (x, y) -> length (find_matching (x, y) matrices) = 2) matrices |> (fun (x, y) -> (x, rotate_right_once y)) in
+  let big_matrix = Array.make_matrix mapsize mapsize first in
+  for i = 1 to mapsize - 1 do
+    big_matrix.(0).(i) <- get_matrix_right big_matrix.(0).(i - 1) matrices;
+  done;
+  for j = 0 to mapsize - 1 do
+    for i = 1 to mapsize - 1 do
+      big_matrix.(i).(j) <- get_matrix_down big_matrix.(i - 1).(j) matrices;
+    done;
+  done;
+  let matrix_matrix = Array.map (Array.map snd) big_matrix in
+  let chart = concat_matrix @@ Array.map (Array.map trim_matrix) matrix_matrix in
+  let charts = all_rotations chart in
+  let monster_counts = map monster_no charts in
+  let all_count = Array.fold_left (+) 0 (Array.map (Array.fold_left (fun x y -> if y = '#' then succ x else x) 0) chart) in
+  chart 
 let day = "20"
 let input_data = preberi_datoteko ("inputs/day_" ^ day ^ ".in")
 let main () =

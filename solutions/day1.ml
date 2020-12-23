@@ -14,10 +14,6 @@ let string_to_list string =
   |> String.split_on_char '\n'
   |> List.filter (fun s -> s <> "");;
 
-let rec print_list = function
-  | [] -> ()
-  | head :: tail -> print_int head ; print_string " " ; print_list tail
-
 let naloga1 string = 
   let nums = List.map int_of_string (string_to_list string) in
   let rec r l1 l2 = match l1, l2 with
