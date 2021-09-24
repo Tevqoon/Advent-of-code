@@ -113,7 +113,7 @@ let trim_matrix matrix =
     Array.iteri (fun j _ -> new_matrix.(i).(j) <- matrix.(i + 1).(j + 1)) x) new_matrix;
   new_matrix
 
-let concat_matrix matrix_matrix = 
+let concat_matrix_matrix matrix_matrix = 
   let l = Array.length matrix_matrix in
   let l' = Array.length matrix_matrix.(0).(0) in
   let ret_matrix = Array.make_matrix (l * l') (l * l') matrix_matrix.(0).(0).(0).(0) in
@@ -123,7 +123,7 @@ let concat_matrix matrix_matrix =
         Array.iteri (fun f w -> 
           ret_matrix.(i * l' + k).(j * l' + f) <- w;
         ) z) y) x) matrix_matrix;
-  ret_matrix 
+  ret_matrix
 
 let monster_no chart =
   let monster = Array.of_list (map Array.of_list (map explode ["                  # "; "#    ##    ##    ###"; " #  #  #  #  #  #   "])) in
@@ -166,32 +166,13 @@ let naloga2 string =
     done;
   done;
   let matrix_matrix = Array.map (Array.map snd) big_matrix in
-  let chart = concat_matrix @@ Array.map (Array.map trim_matrix) matrix_matrix in
+  let chart = concat_matrix_matrix @@ Array.map (Array.map trim_matrix) matrix_matrix in
   let charts = all_rotations chart in
   let monster_counts = map monster_no charts in
   let all_count = Array.fold_left (+) 0 (Array.map (Array.fold_left (fun x y -> if y = '#' then succ x else x) 0) chart) in
   fold_left (fun x y -> if y = 0 then x else all_count - y) 0 monster_counts
   |> string_of_int
 
-let naloga2' string =
-  let matrices = format string in
-  let mapsize = int_of_float ((float_of_int @@ length matrices) ** (0.5)) in
-  let first = hd @@ filter (fun (x, y) -> length (find_matching (x, y) matrices) = 2) matrices |> (fun (x, y) -> (x, rotate_right_once y)) in
-  let big_matrix = Array.make_matrix mapsize mapsize first in
-  for i = 1 to mapsize - 1 do
-    big_matrix.(0).(i) <- get_matrix_right big_matrix.(0).(i - 1) matrices;
-  done;
-  for j = 0 to mapsize - 1 do
-    for i = 1 to mapsize - 1 do
-      big_matrix.(i).(j) <- get_matrix_down big_matrix.(i - 1).(j) matrices;
-    done;
-  done;
-  let matrix_matrix = Array.map (Array.map snd) big_matrix in
-  let chart = concat_matrix @@ Array.map (Array.map trim_matrix) matrix_matrix in
-  let charts = all_rotations chart in
-  let monster_counts = map monster_no charts in
-  let all_count = Array.fold_left (+) 0 (Array.map (Array.fold_left (fun x y -> if y = '#' then succ x else x) 0) chart) in
-  chart 
 let day = "20"
 let input_data = preberi_datoteko ("inputs/day_" ^ day ^ ".in")
 let main () =
